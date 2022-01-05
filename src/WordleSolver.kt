@@ -2,7 +2,6 @@ package wordle
 
 import java.io.BufferedReader
 import java.io.FileReader
-import java.time.Instant
 import kotlin.streams.toList
 
 const val LENGTH = 5
@@ -74,16 +73,20 @@ fun findBestWord(wordList: List<String>, removed: BooleanArray): Int {
 }
 
 fun compareWords(main: String, guess: String): String {
-    val letters = BooleanArray(26)
-    main.chars().forEach {
-        letters[it - 'A'.toInt()] = true
-    }
     var answer = ""
     for(i in 0 until LENGTH) {
         var c =
                 if(main[i] == guess[i]) 'G'
-                else if(letters[guess[i].toInt() - 'A'.toInt()]) 'Y'
-                else 'B'
+                else {
+                    var found = false
+                    for(j in 0 until LENGTH) {
+                        if(j != i && main[j] != guess[j] && main[j] == guess[i]) {
+                            found = true
+                            break
+                        }
+                    }
+                    if(found) 'Y' else 'B'
+                }
         answer += c
     }
     return answer
