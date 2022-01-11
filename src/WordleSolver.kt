@@ -86,19 +86,20 @@ fun findBestWord(wordList: List<String>, removed: BooleanArray): Int {
 
 fun compareWords(main: String, guess: String): Int {
     var answer = 0
+    var letters = IntArray(26)
+    for(i in 0 until LENGTH) {
+        if(main[i] != guess[i])
+            letters[main[i] - 'A']++
+    }
     for(i in 0 until LENGTH) {
         answer *= 3
         var c =
                 if(main[i] == guess[i]) 0
                 else {
-                    var found = false
-                    for(j in 0 until LENGTH) {
-                        if(j != i && main[j] != guess[j] && main[j] == guess[i]) {
-                            found = true
-                            break
-                        }
-                    }
-                    if(found) 1 else 2
+                    if(letters[guess[i] - 'A'] > 0) {
+                        letters[guess[i] - 'A']--
+                        1
+                    } else 2
                 }
         answer += c
     }
