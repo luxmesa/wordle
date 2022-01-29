@@ -15,10 +15,11 @@ fun main() {
 
     var roundCount = 1
     var won = false
+    println("Fuckzilla Activated\n")
     while(wordCount >= 1 && !won) {
-        println("Round $roundCount. remaining words ${wordCount}. Waiting for guess... ")
-        roundCount++
+        println("Round $roundCount. Remaining words: ${wordCount}. Waiting for guess... ")
         val bestWord = findBestWord(wordList, removed)
+        roundCount++
         println("Best word: ${wordList[bestWord]}. ")
         if(removed[bestWord])
             println("This guess is no longer on the list")
@@ -39,9 +40,9 @@ fun main() {
         }
     }
     if(won)
-        println("Sweet!")
+        println("Fuckzilla is victorious!")
     else
-        println("Sorry, I screwed up")
+        println("Fuckzilla has been defeated!")
 }
 
 fun inputToInt(input: String): Int {
@@ -68,15 +69,15 @@ fun generateWordList(filePath: String): List<String> {
 
 fun findBestWord(wordList: List<String>, removed: BooleanArray): Int {
     var bestWord = 0
-    var bestScore = 0
+    var bestScore = Integer.MAX_VALUE
     wordList.indices.forEach { guess ->
         val comparisons = HashMap<Int, Int>()
         wordList.indices.filter { !removed[it] }.forEach { main ->
             val comparison = compareWords(wordList[main], wordList[guess])
             comparisons[comparison] = (comparisons[comparison] ?: 0) + 1
         }
-        val score = comparisons.values.sumBy { it * it }
-        if(bestScore == 0 || bestScore > score || (bestScore == score && !removed[guess])) {
+        val score = comparisons.filter { it.key != 0 }.values.sumBy { it * it }
+        if(bestScore > score) {
             bestScore = score
             bestWord = guess
         }
