@@ -8,10 +8,25 @@ const val LENGTH = 5
 const val PATH = "Resources/dictionary.txt"
 
 fun main() {
+    //val allowedList = generateWordList("Resources/wordle-allowed-guesses.txt")
+    //val answersList = generateWordList("Resources/wordle-answers-alphabetical.txt");
+    //val wordList = (allowedList + answersList).sorted()
     val wordList = generateWordList(PATH)
 
     var wordCount = wordList.size
     val removed = BooleanArray(wordCount)
+
+    /*var wordIndex = 0
+    var answerIndex = 0
+    while(answerIndex < answersList.size) {
+        while(answersList[answerIndex] != wordList[wordIndex]) {
+            removed[wordIndex] = true
+            wordIndex++
+            wordCount--
+        }
+        wordIndex++
+        answerIndex++
+    }*/
 
     var roundCount = 1
     var won = false
@@ -62,6 +77,7 @@ fun generateWordList(filePath: String): List<String> {
 
     val wordList = bufferedReader.lines()
             .filter { it.length == LENGTH }
+            .map { it.toUpperCase() }
             .toList()
     bufferedReader.close()
     return wordList
