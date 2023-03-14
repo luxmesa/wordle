@@ -6,18 +6,24 @@ import kotlin.streams.toList
 
 const val LENGTH = 5
 const val PATH = "Resources/dictionary.txt"
+// For this version, the best start word is "ROATE". You can override to
+// speed up the first round.
+const val OVERRIDE_START_WORD = ""//"ROATE"
 
 fun main() {
-    //val allowedList = generateWordList("Resources/wordle-allowed-guesses.txt")
-    //val answersList = generateWordList("Resources/wordle-answers-alphabetical.txt");
-    //val wordList = (allowedList + answersList).sorted()
-    val wordList = generateWordList(PATH)
+    val allowedSet = generateWordList("Resources/wordle-allowed-guesses.txt")
+    val answersSet = generateWordList("Resources/wordle-answers-alphabetical.txt")
+    val usedSet = generateWordList("Resources/wordle-previous-answers.txt")
+    val wordList = (allowedSet + answersSet).toList().sorted()
+    val answersList = (answersSet - usedSet).toList().sorted()
 
     var wordCount = wordList.size
     val removed = BooleanArray(wordCount)
 
-    /*var wordIndex = 0
+    var wordIndex = 0
     var answerIndex = 0
+
+    // mark off words that aren't on the answer list
     while(answerIndex < answersList.size) {
         while(answersList[answerIndex] != wordList[wordIndex]) {
             removed[wordIndex] = true
@@ -26,14 +32,16 @@ fun main() {
         }
         wordIndex++
         answerIndex++
-    }*/
+    }
 
     var roundCount = 1
     var won = false
+    var overrideStartIndex = wordList.indexOf(OVERRIDE_START_WORD)
     println("Fuckzilla Activated\n")
     while(wordCount >= 1 && !won) {
         println("Round $roundCount. Remaining words: ${wordCount}. Waiting for guess... ")
-        val bestWord = findBestWord(wordList, removed)
+        val bestWord = if(overrideStartIndex != -1) overrideStartIndex else findBestWord(wordList, removed)
+        overrideStartIndex = -1
         roundCount++
         println("Best word: ${wordList[bestWord]}. ")
         if(removed[bestWord])
@@ -72,13 +80,14 @@ fun inputToInt(input: String): Int {
     return answer
 }
 
-fun generateWordList(filePath: String): List<String> {
+fun generateWordList(filePath: String): Set<String> {
     val bufferedReader = BufferedReader(FileReader(filePath))
 
     val wordList = bufferedReader.lines()
             .filter { it.length == LENGTH }
             .map { it.toUpperCase() }
             .toList()
+            .toSet()
     bufferedReader.close()
     return wordList
 }
